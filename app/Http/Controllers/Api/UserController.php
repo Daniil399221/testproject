@@ -6,23 +6,52 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    #[OA\Get(
+        path: '/api/users',
+        operationId: 'users.index',
+        description: 'Возвращает пагинированный список пользователей',
+        summary: 'Получить список пользователей',
+        tags: ['Пользователи'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Список пользователей',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/UserResource')
+                        ),
+                        new OA\Property(property: 'current_page', type: 'integer'),
+                        new OA\Property(property: 'per_page', type: 'integer'),
+                        new OA\Property(property: 'total', type: 'integer')
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::query()->paginate(10);
 
-        return response(UserResource::collection($users), 200);
+        return new JsonResponse([
+            'data' => UserResource::collection($users),
+            'current_page' => $users->currentPage(),
+            'per_page' => $users->perPage(),
+            'total' => $users->total()
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(UserRequest $request)
     {
          $data = $request->validated();
@@ -56,6 +85,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
+
+        return response(null, 204);
     }
 }
