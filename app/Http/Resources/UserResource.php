@@ -4,14 +4,20 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Attributes as OA;
 
 class UserResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
+    #[OA\Schema(
+        schema: 'UserResource',
+        properties: [
+            new OA\Property(property: 'id', type: 'integer'),
+            new OA\Property(property: 'name', type: 'string'),
+            new OA\Property(property: 'email', type: 'string'),
+            new OA\Property(property: 'status', type: 'string')
+        ],
+        type: 'object'
+    )]
     public function toArray(Request $request): array
     {
         return [

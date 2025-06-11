@@ -6,7 +6,19 @@ use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'UserRequest',
+    required: ['name', 'email', 'password'],
+    properties: [
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'email', type: 'string'),
+        new OA\Property(property: 'password', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+    ],
+    type: 'object'
+)]
 class UserRequest extends FormRequest
 {
     /**
@@ -27,7 +39,7 @@ class UserRequest extends FormRequest
         $userId = $this->route('user'); ;
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => $userId ? ['nullable', 'string', 'min:8'] : ['required', 'string', 'min:8'],
             'status' => ['sometimes', Rule::in(UserStatus::cases())],
         ];

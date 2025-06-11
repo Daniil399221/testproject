@@ -11,7 +11,6 @@ use OpenApi\Attributes as OA;
 
 class UserController extends Controller
 {
-
     #[OA\Get(
         path: '/api/users',
         operationId: 'users.index',
@@ -52,6 +51,24 @@ class UserController extends Controller
     }
 
 
+    #[OA\Post(
+        path: '/api/users/store',
+        operationId: 'users.store',
+        description: 'Создает пользователя',
+        summary: 'Создать пользователя',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UserRequest')
+        ),
+        tags: ['Пользователи'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Задача создана',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource')
+            )
+        ]
+    )]
     public function store(UserRequest $request)
     {
          $data = $request->validated();
@@ -60,32 +77,66 @@ class UserController extends Controller
          return response(UserResource::make($user), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    #[OA\Get(
+        path: '/api/users/show/{user}',
+        operationId: 'users.show',
+        description: 'Возвращает конкретного пользователя',
+        summary: 'Получить пользователя',
+        tags: ['Пользователи'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Пользователь',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource')
+            )
+        ]
+    )]
+    public function show(User $user)
     {
-        return response(UserResource::make(User::find($id)), 200);
+        return response(UserResource::make($user), 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UserRequest $request, string $id)
+    #[OA\Put(
+        path: '/api/users/update/{user}',
+        operationId: 'users.update',
+        description: 'Обновляет пользователя',
+        summary: 'Обновить пользователя',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UserRequest')
+        ),
+        tags: ['Пользователи'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Пользователь обновлен',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResource')
+            )
+        ]
+    )]
+    public function update(UserRequest $request, User $user)
     {
         $data = $request->validated();
-        $user = User::find($id);
         $user->update($data);
 
         return response(UserResource::make($user), 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    #[OA\Delete(
+        path: '/api/users/destroy/{user}',
+        operationId: 'users.destroy',
+        description: 'Удаляет пользователя',
+        summary: 'Удалить пользователя',
+        tags: ['Пользователи'],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: 'Пользователь удален'
+            )
+        ]
+    )]
+    public function destroy(User $user)
     {
-        $user = User::find($id);
         $user->delete();
 
         return response(null, 204);
