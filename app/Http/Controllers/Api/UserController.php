@@ -93,6 +93,7 @@ class UserController extends Controller
     )]
     public function show(User $user)
     {
+        $user->load('roles');
         return response(UserResource::make($user), 200);
     }
 

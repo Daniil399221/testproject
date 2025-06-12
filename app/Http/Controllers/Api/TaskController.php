@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -188,9 +190,20 @@ class TaskController extends Controller
             'user_id' => 'required|integer|exists:users,id',
         ]);
 
-        $task->assignees()->syncWithoutDetaching([$request->user_id]);
+        $user = User::findOrFail($request['user_id']);
 
-        return response(TaskResource::make($task->load('assignees')), 200);
+        if($user->status === UserStatus::ON_VACATION) {
+            return response([
+                'message' => 'Пользователь в отпуске'
+            ], 400);
+        }
+
+        $task->assignees()->attach([$request->user_id]);
+
+        return response()->json([
+            'message' => 'Пользователь назначен на задачу',
+            'data' => TaskResource::make($task->load('assignees'))
+        ]);
     }
 
     #[OA\Delete(
@@ -223,6 +236,9 @@ class TaskController extends Controller
 
         $task->assignees()->detach([$request->user_id]);
 
-        return response(TaskResource::make($task->load('assignees')), 204);
+        return response()->json([
+            'message' => 'Пользователь отменен на задачу',
+            'data' => TaskResource::make($task->load('assignees'))
+        ]);
     }
 }
