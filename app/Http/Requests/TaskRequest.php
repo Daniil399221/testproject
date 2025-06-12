@@ -2,10 +2,22 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\UserStatus;
+use App\Enums\TaskStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'TaskRequest',
+    required: ['title', 'description', 'status'],
+    properties: [
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'assignees', type: 'array',
+            items: new OA\Items(type: 'integer')),
+    ],
+)]
 class TaskRequest extends FormRequest
 {
     /**
@@ -26,7 +38,7 @@ class TaskRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
-            'status' => ['sometimes', Rule::in(UserStatus::cases())],
+            'status' => ['sometimes', Rule::in(TaskStatus::cases())],
             'assignees' => ['sometimes', 'array'],
             'assignees.*' => ['exists:users,id'],
         ];
@@ -38,6 +50,7 @@ class TaskRequest extends FormRequest
             'title.required' => __('Поле название обязательное'),
             'description.required' => __('Поле описание обязательное'),
             'status.required' => __('Поле статус обязательное'),
+            'status.in' => __('Указан недопустимый статус'),
         ];
     }
 }
