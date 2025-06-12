@@ -1,0 +1,574 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Название приложения",
+        "contact": {
+            "name": "Название приложения"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/tasks": {
+            "get": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Получить список задач",
+                "description": "Возвращает пагинированный список задач",
+                "operationId": "tasks.index",
+                "responses": {
+                    "200": {
+                        "description": "Список задач",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TaskResource"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/store": {
+            "post": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Создать задачу",
+                "description": "Создает задачу",
+                "operationId": "tasks.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Задача создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/show/{id}": {
+            "get": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Получить задачу",
+                "description": "Возвращает конкретную задачу",
+                "operationId": "tasks.show",
+                "responses": {
+                    "200": {
+                        "description": "Задача",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/update/{id}": {
+            "put": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Обновить задачу",
+                "description": "Обновляет задачу",
+                "operationId": "tasks.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Задача обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/destroy/{id}": {
+            "delete": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Удалить задачу",
+                "description": "Удаляет задачу",
+                "operationId": "tasks.destroy",
+                "responses": {
+                    "204": {
+                        "description": "Задача удалена"
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}/assignees": {
+            "post": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Назначить пользователя на задачу",
+                "description": "Назначает пользователя на задачу",
+                "operationId": "tasks.assign",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Задача обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}/unassign": {
+            "delete": {
+                "tags": [
+                    "Задачи"
+                ],
+                "summary": "Отменить назначение пользователя на задачу",
+                "description": "Отменяет назначение пользователя на задачу",
+                "operationId": "tasks.unassign",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Задача обновлена"
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Получить список пользователей",
+                "description": "Возвращает пагинированный список пользователей",
+                "operationId": "users.index",
+                "responses": {
+                    "200": {
+                        "description": "Список пользователей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/store": {
+            "post": {
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Создать пользователя",
+                "description": "Создает пользователя",
+                "operationId": "users.store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Задача создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/show/{user}": {
+            "get": {
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Получить пользователя",
+                "description": "Возвращает конкретного пользователя",
+                "operationId": "users.show",
+                "responses": {
+                    "200": {
+                        "description": "Пользователь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/update/{user}": {
+            "put": {
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Обновить пользователя",
+                "description": "Обновляет пользователя",
+                "operationId": "users.update",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пользователь обновлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/destroy/{user}": {
+            "delete": {
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Удалить пользователя",
+                "description": "Удаляет пользователя",
+                "operationId": "users.destroy",
+                "responses": {
+                    "204": {
+                        "description": "Пользователь удален"
+                    }
+                }
+            }
+        },
+        "/api/users/{user}/roles/assign": {
+            "post": {
+                "tags": [
+                    "Роли"
+                ],
+                "summary": "Назначить роль",
+                "description": "Назначает роль пользователю",
+                "operationId": "users.roles.assign",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "role_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Роль назначена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{user}/roles/revoke": {
+            "delete": {
+                "tags": [
+                    "Роли"
+                ],
+                "summary": "Снять роль",
+                "description": "Снимает роль у пользователя",
+                "operationId": "users.roles.revoke",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "role_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Роль снята",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/roles": {
+            "get": {
+                "tags": [
+                    "Роли"
+                ],
+                "summary": "Список ролей",
+                "description": "Возвращает список ролей",
+                "operationId": "roles.list",
+                "responses": {
+                    "200": {
+                        "description": "Список ролей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TaskRequest": {
+                "required": [
+                    "title",
+                    "description",
+                    "status"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "assignees": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UserRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RoleResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TaskResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "assignees": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Задачи",
+            "description": "Задачи"
+        },
+        {
+            "name": "Пользователи",
+            "description": "Пользователи"
+        },
+        {
+            "name": "Роли",
+            "description": "Роли"
+        }
+    ]
+}

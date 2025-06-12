@@ -48,4 +48,9 @@ class User extends Authenticatable
             related: Notification::class
         );
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', '!=', UserStatus::ON_VACATION);
+    }
 }

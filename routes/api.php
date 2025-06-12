@@ -29,8 +29,6 @@ Route::prefix('/users/{user}/roles')
         Route::delete('/revoke', 'revokeRole');
 });
 
-
-
 //          * API *
 //         User Roles List
 
